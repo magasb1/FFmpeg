@@ -91,6 +91,7 @@ static int is_supported(enum AVCodecID id)
     case AV_CODEC_ID_RAWVIDEO:
     case AV_CODEC_ID_BITPACKED:
     case AV_CODEC_ID_G728:
+    case AV_CODEC_ID_SMPTE_KLV:
         return 1;
     default:
         return 0;
@@ -675,6 +676,17 @@ static int rtp_write_packet(AVFormatContext *s1, AVPacket *pkt)
             ff_rtp_send_raw_rfc4175(s1, pkt->data, size, interlaced, 1);
         break;
         }
+    case AV_CODEC_ID_SMPTE_KLV:
+        /* RFC 6597: a KLVunit is sent as one or more payloads without any
+         * payload header, all sharing the RTP timestamp, with the marker
+         * bit set on the last one. rtp_send_raw does exactly that. */
+        if (pkt->pts == AV_NOPTS_VALUE) {
+            av_log(s1, AV_LOG_ERROR,
+                   "KLV packet without timestamp, RFC 6597 requires one\n");
+            return AVERROR(EINVAL);
+        }
+        rtp_send_raw(s1, pkt->data, size);
+        break;
     case AV_CODEC_ID_OPUS:
         if (size > s->max_payload_size) {
             av_log(s1, AV_LOG_ERROR,

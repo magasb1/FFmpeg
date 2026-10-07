@@ -77,6 +77,7 @@ OBJS-$(CONFIG_RTPDEC)                    += rdt.o                       \
                                             rtpdec_qdm2.o               \
                                             rtpdec_qt.o                 \
                                             rtpdec_rfc4175.o            \
+                                            rtpdec_smpte336m.o          \
                                             rtpdec_svq3.o               \
                                             rtpdec_vc2hq.o              \
                                             rtpdec_vp8.o                \

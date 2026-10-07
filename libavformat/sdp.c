@@ -835,6 +835,11 @@ static int sdp_write_media_attributes(char *buff, int size, const AVStream *st,
                                      payload_type);
         }
         break;
+    case AV_CODEC_ID_SMPTE_KLV:
+        /* RFC 6597, the clock rate is fixed to 90 kHz by rtp_write_header */
+        av_strlcatf(buff, size, "a=rtpmap:%d smpte336m/90000\r\n",
+                                 payload_type);
+        break;
     default:
         /* Nothing special to do here... */
         break;
